@@ -13,7 +13,7 @@ const (
 
 // Struct with Struct Tags for JSON serialization and deserialization
 type Job struct {
-	ID          string    `json:id"`
+	ID          string    `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	Payload     string    `json:"payload"`
@@ -32,4 +32,16 @@ func NewJob(id, name, description, payload string, priority int) Job {
 		Priority:    priority,
 		CreatedAt:   time.Now(),
 	}
+}
+
+// Value Receiver method to check if the job is in a terminal state (Completed or Failed)
+
+func (j Job) isTerminal() bool {
+	return j.Status == Completed || j.Status == Failed
+}
+
+// Pointer Receiver method to mark the job as Running
+
+func (j *Job) MarkRunning() {
+	j.Status = Running
 }
