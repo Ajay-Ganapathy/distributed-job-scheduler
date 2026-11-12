@@ -11,6 +11,7 @@ const (
 	Failed    Status = "FAILED"
 )
 
+// Struct with Struct Tags for JSON serialization and deserialization
 type Job struct {
 	ID          string    `json:id"`
 	Name        string    `json:"name"`
