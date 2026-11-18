@@ -1,12 +1,26 @@
 package job
 
+// Collection stores jobs and maintains an index by ID.
 type Collection struct {
-	jobs []Job
+	jobs  []Job
+	index map[string]int
 }
 
 // Add inserts a job into the collection.
 
 func (c *Collection) Add(j Job) {
+
+	if c.index == nil {
+		c.index = make(map[string]int)
+	}
+
+	// Upsert: If the job already exists, update it; otherwise, add it to the collection.
+	if position, exists := c.index[j.ID]; exists {
+		c.jobs[position] = j
+		return
+	}
+
+	c.index[j.ID] = len(c.jobs)
 	c.jobs = append(c.jobs, j)
 }
 
@@ -30,14 +44,17 @@ func (c *Collection) All() []Job {
 	return append([]Job(nil), c.jobs...)
 }
 
-// GetByID retrieves a job by its ID. It returns the job and a boolean indicating whether the job was found.
-
+// FindByID retrieves a job using the index.
 func (c *Collection) FindByID(id string) (Job, bool) {
-	for _, j := range c.jobs {
-		if j.ID == id {
-			return j, true
-		}
+
+	if position, exists := c.index[id]; exists {
+		return c.jobs[position], true
 	}
+	// for _, j := range c.jobs {
+	// 	if j.ID == id {
+	// 		return j, true
+	// 	}
+	// }
 
 	return Job{}, false
 }

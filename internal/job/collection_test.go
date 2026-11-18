@@ -65,3 +65,49 @@ func TestCollectionAllReturnsCopy(t *testing.T) {
 		t.Fatal("modifying returned slice changed internal collection")
 	}
 }
+
+func TestCollectionAddDuplicateID(t *testing.T) {
+	collection := Collection{}
+
+	first := NewJob(
+		"job-001",
+		"embedding",
+		"Generate embeddings",
+		"doc-001",
+		5,
+	)
+
+	updated := NewJob(
+		"job-001",
+		"summarization",
+		"Generate summary",
+		"doc-002",
+		8,
+	)
+
+	collection.Add(first)
+	collection.Add(updated)
+
+	if collection.Len() != 1 {
+		t.Fatalf("expected 1 job, got %d", collection.Len())
+	}
+
+	result, ok := collection.FindByID("job-001")
+	if !ok {
+		t.Fatal("expected to find job with ID 'job-001', but it was not found")
+	}
+
+	if result.Name != "summarization" {
+		t.Fatalf("expected job Name to be 'summarization', but got '%s'", result.Name)
+	}
+
+}
+
+func TestCollectionFindMissingID(t *testing.T) {
+	collection := Collection{}
+	_, found := collection.FindByID("non-existent-id")
+
+	if found {
+		t.Fatal("expected not to find job with ID 'non-existent-id', but it was found")
+	}
+}

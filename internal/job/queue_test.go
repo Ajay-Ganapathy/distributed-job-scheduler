@@ -28,7 +28,7 @@ func TestNewBoundedQueue(t *testing.T) {
 }
 
 func TestNewBoundedQueueRejectsInvalidCapacity(t *testing.T) {
-	_ , err := NewBoundedQueue(0)
+	_, err := NewBoundedQueue(0)
 
 	if err == nil {
 		t.Fatalf("Expected error for invalid capacity, but got nil")

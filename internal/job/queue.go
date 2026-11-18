@@ -2,7 +2,6 @@ package job
 
 import "errors"
 
-
 var (
 	ErrInvalidCapacity = errors.New("queue cpacity must be greater than zero")
 	ErrQueueFull       = errors.New("queue is full")
@@ -23,7 +22,7 @@ func NewBoundedQueue(capacity int) (*BoundedQueue, error) {
 	}
 
 	return &BoundedQueue{
-		items:    make([]Job, 0 ,  capacity),
+		items:    make([]Job, 0, capacity),
 		capacity: capacity,
 	}, nil
 }
@@ -36,8 +35,6 @@ func (q *BoundedQueue) EnQueue(j Job) error {
 	}
 
 	q.items = append(q.items, j)
-
-	
 
 	return nil
 }
