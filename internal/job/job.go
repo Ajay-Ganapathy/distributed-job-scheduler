@@ -1,6 +1,8 @@
 package job
 
 import "time"
+import "errors"
+import "fmt"
 
 type Status string
 
@@ -9,6 +11,10 @@ const (
 	Running   Status = "RUNNING"
 	Completed Status = "COMPLETED"
 	Failed    Status = "FAILED"
+)
+
+var ErrInvalidStatusTransition = errors.New(
+	"invalid job status transition",
 )
 
 // Struct with Struct Tags for JSON serialization and deserialization
@@ -20,6 +26,36 @@ type Job struct {
 	Status      Status    `json:"status"`
 	Priority    int       `json:"priority"`
 	CreatedAt   time.Time `json:"created_at"`
+}
+
+func (j Job) CanTransitionTo(next Status) bool {
+	switch j.Status {
+	case Pending:
+		return next == Running
+
+	case Running:
+		return next == Completed || next == Failed
+
+	default:
+		return false
+	}
+}
+
+func (j *Job) TransitionTo(next Status) error {
+	if !j.CanTransitionTo(next) {
+		return fmt.Errorf(
+			"%w: %s -> %s",
+			ErrInvalidStatusTransition,
+			j.Status,
+			next,
+		)
+
+	}
+
+	j.Status = next
+
+	return nil
+
 }
 
 func NewJob(id, name, description, payload string, priority int) Job {
